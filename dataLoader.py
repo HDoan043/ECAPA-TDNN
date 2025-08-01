@@ -23,8 +23,8 @@ class train_loader(object):
 			self.noiselist[noise_type] = files
 
 		# Duyệt RIR - tìm tất cả file .wav trong mọi Room
-	        rir_pattern = os.path.join(rir_path, '**', '*.wav')
-	        self.rir_files = glob.glob(rir_pattern, recursive=True)
+		rir_pattern = os.path.join(rir_path, '**', '*.wav')
+		self.rir_files = glob.glob(rir_pattern, recursive=True)
 		
 		# augment_files   = glob.glob(os.path.join(musan_path,'**','*.wav'), recursive=True)
 		# for file in augment_files:
