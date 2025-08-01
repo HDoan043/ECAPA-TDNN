@@ -18,9 +18,9 @@ class train_loader(object):
 
 		#  Duyệt MUSAN - tìm tất cả file .wav trong speech, music, noise
 	        for noise_type in self.noisetypes:
-	            pattern = os.path.join(musan_path, noise_type, '**', '*.wav')
-	            files = glob.glob(pattern, recursive=True)
-	            self.noiselist[noise_type] = files
+		        pattern = os.path.join(musan_path, noise_type, '**', '*.wav')
+		        files = glob.glob(pattern, recursive=True)
+		        self.noiselist[noise_type] = files
 
 		# Duyệt RIR - tìm tất cả file .wav trong mọi Room
 	        rir_pattern = os.path.join(rir_path, '**', '*.wav')
