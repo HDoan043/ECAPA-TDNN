@@ -2,7 +2,8 @@
 DataLoader for training
 '''
 
-import glob, numpy, os, random, soundfile, torch
+import glob, os, random, soundfile, torch
+import numpy as np
 from scipy import signal
 
 np.float = float
