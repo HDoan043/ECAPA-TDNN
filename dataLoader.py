@@ -2,11 +2,9 @@
 DataLoader for training
 '''
 
-import glob, os, random, soundfile, torch
-import numpy as np
+import glob, numpy, os, random, soundfile, torch
 from scipy import signal
 
-np.float = float
 class train_loader(object):
 	def __init__(self, train_list, train_path, musan_path, rir_path, num_frames, **kwargs):
 		self.train_path = train_path
