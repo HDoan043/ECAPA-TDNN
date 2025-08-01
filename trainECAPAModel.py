@@ -23,7 +23,7 @@ parser.add_argument('--train_path', type=str,   default="/kaggle/input/vlsp2025-
 parser.add_argument('--eval_list',  type=str,   default="/kaggle/working/Speaker_Verification/verification_list.txt",              help='The path of the evaluation list, veri_test2.txt comes from https://www.robots.ox.ac.uk/~vgg/data/voxceleb/meta/veri_test2.txt')
 parser.add_argument('--eval_path',  type=str,   default="/kaggle/input/vlsp2025-train/vlsp_train/home4/vuhl/VSASV-Dataset",        help='The path of the evaluation data, eg:"/data08/VoxCeleb1/test/wav" in my case')
 parser.add_argument('--musan_path', type=str,   default="/kaggle/input/openslr17/musan",                    			   				   help='The path to the MUSAN set, eg:"/data08/Others/musan_split" in my case')
-parser.add_argument('--rir_path',   type=str,   default="/kaggle/room-impulse-response-rir/RIRS_NOISES/simulated_rirs",     		           					   help='The path to the RIR set, eg:"/data08/Others/RIRS_NOISES/simulated_rirs" in my case');
+parser.add_argument('--rir_path',   type=str,   default="/kaggle/input/room-impulse-response-rir/RIRS_NOISES/simulated_rirs",     		           					   help='The path to the RIR set, eg:"/data08/Others/RIRS_NOISES/simulated_rirs" in my case');
 parser.add_argument('--save_path',  type=str,   default="/kaggle/working/Speaker_Verification/ckpt",                               help='Path to save the score.txt and models')
 parser.add_argument('--initial_model',  type=str,   default="/kaggle/working/ECAPA-TDNN/exps/pretrain.model",                                          		           help='Path of the initial_model')
 
