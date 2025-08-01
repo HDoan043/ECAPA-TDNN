@@ -9,17 +9,30 @@ class train_loader(object):
 	def __init__(self, train_list, train_path, musan_path, rir_path, num_frames, **kwargs):
 		self.train_path = train_path
 		self.num_frames = num_frames
+		
 		# Load and configure augmentation files
 		self.noisetypes = ['noise','speech','music']
 		self.noisesnr = {'noise':[0,15],'speech':[13,20],'music':[5,15]}
 		self.numnoise = {'noise':[1,1], 'speech':[3,8], 'music':[1,1]}
 		self.noiselist = {}
-		augment_files   = glob.glob(os.path.join(musan_path,'**','*.wav'), recursive=True)
-		for file in augment_files:
-			if file.split('/')[-4] not in self.noiselist:
-				self.noiselist[file.split('/')[-4]] = []
-			self.noiselist[file.split('/')[-4]].append(file)
-		self.rir_files  = glob.glob(os.path.join(rir_path,'**','*.wav'), recursive=True)
+
+		#  Duyệt MUSAN - tìm tất cả file .wav trong speech, music, noise
+	        for noise_type in self.noisetypes:
+	            pattern = os.path.join(musan_path, noise_type, '**', '*.wav')
+	            files = glob.glob(pattern, recursive=True)
+	            self.noiselist[noise_type] = files
+
+		# Duyệt RIR - tìm tất cả file .wav trong mọi Room
+	        rir_pattern = os.path.join(rir_path, '**', '*.wav')
+	        self.rir_files = glob.glob(rir_pattern, recursive=True)
+		
+		# augment_files   = glob.glob(os.path.join(musan_path,'**','*.wav'), recursive=True)
+		# for file in augment_files:
+		# 	if file.split('/')[-4] not in self.noiselist:
+		# 		self.noiselist[file.split('/')[-4]] = []
+		# 	self.noiselist[file.split('/')[-4]].append(file)
+		# self.rir_files  = glob.glob(os.path.join(rir_path,'**','*.wav'), recursive=True)
+		
 		# Load data & labels
 		self.data_list  = []
 		self.data_label = []
