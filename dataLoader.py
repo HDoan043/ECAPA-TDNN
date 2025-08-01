@@ -10,41 +10,45 @@ class train_loader(object):
 		self.train_path = train_path
 		self.num_frames = num_frames
 		
-		# Load and configure augmentation files
-		self.noisetypes = ['noise','speech','music']
-		self.noisesnr = {'noise':[0,15],'speech':[13,20],'music':[5,15]}
-		self.numnoise = {'noise':[1,1], 'speech':[3,8], 'music':[1,1]}
-		self.noiselist = {}
-
-		#  Duyệt MUSAN - tìm tất cả file .wav trong speech, music, noise
+		# Các loại noise cần tìm
+		self.noisetypes = ['noise', 'speech', 'music']
+		self.noisesnr   = {'noise':[0,15], 'speech':[13,20], 'music':[5,15]}
+		self.numnoise   = {'noise':[1,1],  'speech':[3,8],   'music':[1,1]}
+		self.noiselist  = {}
+		
+		print("[INFO] Đang load MUSAN từ:", musan_path)
 		for noise_type in self.noisetypes:
 			pattern = os.path.join(musan_path, noise_type, '**', '*.wav')
-			files = glob.glob(pattern, recursive=True)
+			files   = glob.glob(pattern, recursive=True)
+			if len(files) == 0:
+				raise RuntimeError(f"[ERROR] Không tìm thấy file .wav trong MUSAN/{noise_type}")
 			self.noiselist[noise_type] = files
-
-		# Duyệt RIR - tìm tất cả file .wav trong mọi Room
+			print(f"[INFO] Found {len(files)} wav files for {noise_type}")
+			
+		# Load RIR
 		rir_pattern = os.path.join(rir_path, '**', '*.wav')
 		self.rir_files = glob.glob(rir_pattern, recursive=True)
+		print(f"[INFO] Found {len(self.rir_files)} RIR wav files in {rir_path}")
+		if len(self.rir_files) == 0:
+			raise RuntimeError("[ERROR] Không tìm thấy file .wav trong RIR")
 		
-		# augment_files   = glob.glob(os.path.join(musan_path,'**','*.wav'), recursive=True)
-		# for file in augment_files:
-		# 	if file.split('/')[-4] not in self.noiselist:
-		# 		self.noiselist[file.split('/')[-4]] = []
-		# 	self.noiselist[file.split('/')[-4]].append(file)
-		# self.rir_files  = glob.glob(os.path.join(rir_path,'**','*.wav'), recursive=True)
-		
-		# Load data & labels
+		# Load train list
 		self.data_list  = []
 		self.data_label = []
+		print("[INFO] Đang load train list từ:", train_list)
+		
 		lines = open(train_list).read().splitlines()
 		dictkeys = list(set([x.split()[0] for x in lines]))
 		dictkeys.sort()
 		dictkeys = { key : ii for ii, key in enumerate(dictkeys) }
-		for index, line in enumerate(lines):
+		
+		for line in lines:
 			speaker_label = dictkeys[line.split()[0]]
 			file_name     = os.path.join(train_path, line.split()[1])
 			self.data_label.append(speaker_label)
 			self.data_list.append(file_name)
+			
+		print(f"[INFO] Loaded {len(self.data_list)} audio files from train list")
 
 	def __getitem__(self, index):
 		# Read the utterance and randomly select the segment
