@@ -5,6 +5,7 @@ DataLoader for training
 import glob, numpy, os, random, soundfile, torch
 from scipy import signal
 
+np.float = float
 class train_loader(object):
 	def __init__(self, train_list, train_path, musan_path, rir_path, num_frames, **kwargs):
 		self.train_path = train_path
@@ -83,7 +84,7 @@ class train_loader(object):
 	def add_rev(self, audio):
 		rir_file    = random.choice(self.rir_files)
 		rir, sr     = soundfile.read(rir_file)
-		rir         = numpy.expand_dims(rir.astype(numpy.float),0)
+		rir         = numpy.expand_dims(rir.astype(float),0)
 		rir         = rir / numpy.sqrt(numpy.sum(rir**2))
 		return signal.convolve(audio, rir, mode='full')[:,:self.num_frames * 160 + 240]
 
