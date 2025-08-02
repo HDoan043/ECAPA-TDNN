@@ -68,7 +68,7 @@ class ECAPAModel(nn.Module):
 			startframe = numpy.linspace(0, audio.shape[0]-max_audio, num=5)
 			for asf in startframe:
 				feats.append(audio[int(asf):int(asf)+max_audio])
-			feats = numpy.stack(feats, axis = 0).astype(numpy.float)
+			feats = numpy.stack(feats, axis = 0).astype(float)
 			data_2 = torch.FloatTensor(feats).cuda()
 			# Speaker embeddings
 			with torch.no_grad():
@@ -113,4 +113,5 @@ class ECAPAModel(nn.Module):
 			if self_state[name].size() != loaded_state[origname].size():
 				print("Wrong parameter length: %s, model: %s, loaded: %s"%(origname, self_state[name].size(), loaded_state[origname].size()))
 				continue
+
 			self_state[name].copy_(param)
