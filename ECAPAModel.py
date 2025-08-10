@@ -47,6 +47,8 @@ class ECAPAModel(nn.Module):
 		self.eval()
 		files = []
 		embeddings = {}
+		embedding = None
+		
 		lines = open(eval_list).read().splitlines()
 		for line in lines:
 			files.append(line.split()[1])
@@ -55,31 +57,35 @@ class ECAPAModel(nn.Module):
 		setfiles.sort()
 
 		for idx, file in tqdm.tqdm(enumerate(setfiles), total = len(setfiles)):
-			audio, _  = soundfile.read(os.path.join(eval_path, file))
-			# Full utterance
-			data_1 = torch.FloatTensor(numpy.stack([audio],axis=0)).cuda()
-
-			# Spliited utterance matrix
-			max_audio = 300 * 160 + 240
-			if audio.shape[0] <= max_audio:
-				shortage = max_audio - audio.shape[0]
-				audio = numpy.pad(audio, (0, shortage), 'wrap')
-			feats = []
-			startframe = numpy.linspace(0, audio.shape[0]-max_audio, num=5)
-			for asf in startframe:
-				feats.append(audio[int(asf):int(asf)+max_audio])
-			feats = numpy.stack(feats, axis = 0).astype(float)
-			data_2 = torch.FloatTensor(feats).cuda()
-			# Speaker embeddings
-			with torch.no_grad():
-				embedding_1 = self.speaker_encoder.forward(data_1, aug = False)
-				embedding_1 = F.normalize(embedding_1, p=2, dim=1)
-				embedding_2 = self.speaker_encoder.forward(data_2, aug = False)
-				embedding_2 = F.normalize(embedding_2, p=2, dim=1)
-			embeddings[file] = [embedding_1, embedding_2]
+			try:
+				audio, _  = soundfile.read(os.path.join(eval_path, file))
+				# Full utterance
+				data_1 = torch.FloatTensor(numpy.stack([audio],axis=0)).cuda()
+	
+				# Spliited utterance matrix
+				max_audio = 300 * 160 + 240
+				if audio.shape[0] <= max_audio:
+					shortage = max_audio - audio.shape[0]
+					audio = numpy.pad(audio, (0, shortage), 'wrap')
+				feats = []
+				startframe = numpy.linspace(0, audio.shape[0]-max_audio, num=5)
+				for asf in startframe:
+					feats.append(audio[int(asf):int(asf)+max_audio])
+				feats = numpy.stack(feats, axis = 0).astype(float)
+				data_2 = torch.FloatTensor(feats).cuda()
+				# Speaker embeddings
+				with torch.no_grad():
+					embedding_1 = self.speaker_encoder.forward(data_1, aug = False)
+					embedding_1 = F.normalize(embedding_1, p=2, dim=1)
+					embedding_2 = self.speaker_encoder.forward(data_2, aug = False)
+					embedding_2 = F.normalize(embedding_2, p=2, dim=1)
+					embedding = embedding_2
+				embeddings[file] = [embedding_1, embedding_2]
+			except:
+				embeddings[file] = torch.zeros_like(embedding)
 		scores, labels  = [], []
 
-		for line in lines:			
+		for line in lines:	
 			embedding_11, embedding_12 = embeddings[line.split()[1]]
 			embedding_21, embedding_22 = embeddings[line.split()[2]]
 			# Compute the scores
@@ -115,3 +121,4 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
