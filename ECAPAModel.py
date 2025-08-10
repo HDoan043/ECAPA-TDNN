@@ -82,7 +82,7 @@ class ECAPAModel(nn.Module):
 					embedding = embedding_2
 				embeddings[file] = [embedding_1, embedding_2]
 			except:
-				embeddings[file] = torch.zeros_like(embedding)
+				embeddings[file] = [torch.zeros_like(embedding), torch.zeros_like(embedding)]
 		scores, labels  = [], []
 
 		for line in lines:	
@@ -121,4 +121,5 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
