@@ -43,7 +43,7 @@ class ECAPAModel(nn.Module):
 		sys.stdout.write("\n")
 		return loss/num, lr, top1/index*len(labels)
 
-	def eval_network(self, eval_list, eval_path):
+	def eval_network(self, eval_list, eval_path, output_score_dir = "/kaggle/working/output/ECAPA-TDNN/"):
 		self.eval()
 		files = []
 		embeddings = {}
@@ -95,7 +95,19 @@ class ECAPAModel(nn.Module):
 			score = score.detach().cpu().numpy()
 			scores.append(score)
 			labels.append(int(line.split()[0]))
-			
+
+		### SAVE SCORE EMBEDDING
+		print("SAVING EMBEDDING SCORES ....")
+		os.makedirs(output_score_file, exist_ok = True)
+		with open(os..path.join(output_score_file, "output_score_file.pkl"), "wb") as f:
+			pickle.dump(
+				{
+					"scores": scores,
+					"label" : labels
+				},
+				f
+			)
+		print("FINISH SAVING EMBEDDING SCORE!!")
 		# Coumpute EER and minDCF
 		EER = tuneThresholdfromScore(scores, labels, [1, 0.1])[1]
 		fnrs, fprs, thresholds = ComputeErrorRates(scores, labels)
@@ -121,5 +133,6 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
