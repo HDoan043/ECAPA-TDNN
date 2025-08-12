@@ -43,16 +43,19 @@ class ECAPAModel(nn.Module):
 		sys.stdout.write("\n")
 		return loss/num, lr, top1/index*len(labels)
 
+	'''
+ 	metadata for inference just contains <utt1_key> <utt2_key>, does not include the groundtruth labels.
+ 	'''
 	def inference(self, infer_list, infer_path, output_score_dir ="/kaggle/working/output/ECAPA-TDNN/"):
 		self.eval()
 		files = []
 		embeddings = {}
 		embedding = None
 		
-		lines = open(eval_list).read().splitlines()
+		lines = open(infer_list).read().splitlines()
 		for line in lines:
+			files.append(line.split()[0])
 			files.append(line.split()[1])
-			files.append(line.split()[2])
 		setfiles = list(set(files))
 		setfiles.sort()
 
@@ -86,8 +89,8 @@ class ECAPAModel(nn.Module):
 		scores = []
 
 		for line in lines:	
-			embedding_11, embedding_12 = embeddings[line.split()[1]]
-			embedding_21, embedding_22 = embeddings[line.split()[2]]
+			embedding_11, embedding_12 = embeddings[line.split()[0]]
+			embedding_21, embedding_22 = embeddings[line.split()[1]]
 			# Compute the scores
 			score_1 = torch.mean(torch.matmul(embedding_11, embedding_21.T)) # higher is positive
 			score_2 = torch.mean(torch.matmul(embedding_12, embedding_22.T))
@@ -187,6 +190,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
