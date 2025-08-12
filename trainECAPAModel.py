@@ -20,6 +20,8 @@ parser.add_argument("--lr_decay",   type=float, default=0.97,    help='Learning 
 ## Training and evaluation path/lists, save path
 parser.add_argument('--train_list', type=str,   default="/kaggle/working/Speaker_Verification/train_list.txt",     		   help='The path of the training list, https://www.robots.ox.ac.uk/~vgg/data/voxceleb/meta/train_list.txt')
 parser.add_argument('--train_path', type=str,   default="/kaggle/input/vlsp2025-train/vlsp_train/home4/vuhl/VSASV-Dataset",        help='The path of the training data, eg:"/data08/VoxCeleb2/train/wav" in my case')
+parser.add_argument('--infer_list', type=str,	default="")
+parser.add_argument('--infer_path', type=str,	default="")
 parser.add_argument('--eval_list',  type=str,   default="/kaggle/working/Speaker_Verification/test_list.txt",              help='The path of the evaluation list, veri_test2.txt comes from https://www.robots.ox.ac.uk/~vgg/data/voxceleb/meta/veri_test2.txt')
 parser.add_argument('--eval_path',  type=str,   default="/kaggle/input/vlsp2025-public-test/public_test/home4/vuhl/VSASV-Dataset/vlsp2025",        help='The path of the evaluation data, eg:"/data08/VoxCeleb1/test/wav" in my case')
 parser.add_argument('--musan_path', type=str,   default="/kaggle/input/openslr17/musan",                    			   				   help='The path to the MUSAN set, eg:"/data08/Others/musan_split" in my case')
@@ -35,6 +37,7 @@ parser.add_argument('--n_class', type=int,   default=5994,   help='Number of spe
 
 ## Command
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Only do evaluation')
+perser.add_argument('--infer', 	dest='eval', action='store_true', help='Only do inference')
 
 ## Initialization
 warnings.simplefilter("ignore")
@@ -58,7 +61,14 @@ if args.eval == True:
 	EER, minDCF = s.eval_network(eval_list = args.eval_list, eval_path = args.eval_path)
 	print("EER %2.2f%%, minDCF %.4f%%"%(EER, minDCF))
 	quit()
-
+	
+if args.infer == True:
+	s = ECAPAModel(**vars(args))
+	print("Model %s loaded from previous state!"%args.initial_model)
+	s.load_parameters(args.initial_model)
+	s.inference(args.infer_list, args.infer_path)
+	quit()
+	
 ## If initial_model is exist, system will train from the initial_model
 if args.initial_model != "":
 	print("Model %s loaded from previous state!"%args.initial_model)
@@ -96,4 +106,5 @@ while(1):
 		quit()
 
 	epoch += 1
+
 
