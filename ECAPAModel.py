@@ -43,6 +43,66 @@ class ECAPAModel(nn.Module):
 		sys.stdout.write("\n")
 		return loss/num, lr, top1/index*len(labels)
 
+	def inference(self, infer_list, infer_path, output_score_dir ="/kaggle/working/output/ECAPA-TDNN/"):
+		self.eval()
+		files = []
+		embeddings = {}
+		embedding = None
+		
+		lines = open(eval_list).read().splitlines()
+		for line in lines:
+			files.append(line.split()[1])
+			files.append(line.split()[2])
+		setfiles = list(set(files))
+		setfiles.sort()
+
+		for idx, file in tqdm.tqdm(enumerate(setfiles), total = len(setfiles)):
+			try:
+				audio, _  = soundfile.read(os.path.join(eval_path, file))
+				# Full utterance
+				data_1 = torch.FloatTensor(numpy.stack([audio],axis=0)).cuda()
+	
+				# Spliited utterance matrix
+				max_audio = 300 * 160 + 240
+				if audio.shape[0] <= max_audio:
+					shortage = max_audio - audio.shape[0]
+					audio = numpy.pad(audio, (0, shortage), 'wrap')
+				feats = []
+				startframe = numpy.linspace(0, audio.shape[0]-max_audio, num=5)
+				for asf in startframe:
+					feats.append(audio[int(asf):int(asf)+max_audio])
+				feats = numpy.stack(feats, axis = 0).astype(float)
+				data_2 = torch.FloatTensor(feats).cuda()
+				# Speaker embeddings
+				with torch.no_grad():
+					embedding_1 = self.speaker_encoder.forward(data_1, aug = False)
+					embedding_1 = F.normalize(embedding_1, p=2, dim=1)
+					embedding_2 = self.speaker_encoder.forward(data_2, aug = False)
+					embedding_2 = F.normalize(embedding_2, p=2, dim=1)
+					embedding = embedding_2
+				embeddings[file] = [embedding_1, embedding_2]
+			except:
+				embeddings[file] = [torch.zeros_like(embedding), torch.zeros_like(embedding)]
+		scores = []
+
+		for line in lines:	
+			embedding_11, embedding_12 = embeddings[line.split()[1]]
+			embedding_21, embedding_22 = embeddings[line.split()[2]]
+			# Compute the scores
+			score_1 = torch.mean(torch.matmul(embedding_11, embedding_21.T)) # higher is positive
+			score_2 = torch.mean(torch.matmul(embedding_12, embedding_22.T))
+			score = (score_1 + score_2) / 2
+			score = score.detach().cpu().numpy()
+			scores.append(score)
+
+		### SAVE SCORE EMBEDDING
+		print("SAVING EMBEDDING SCORES ....")
+		os.makedirs(output_score_file, exist_ok = True)
+		with open(os..path.join(output_score_file, "output_score_file.pkl"), "wb") as f:
+			pickle.dump(scores,f)
+		print("FINISH SAVING EMBEDDING SCORE!!")
+
+
 	def eval_network(self, eval_list, eval_path, output_score_dir = "/kaggle/working/output/ECAPA-TDNN/"):
 		self.eval()
 		files = []
@@ -100,13 +160,7 @@ class ECAPAModel(nn.Module):
 		print("SAVING EMBEDDING SCORES ....")
 		os.makedirs(output_score_file, exist_ok = True)
 		with open(os..path.join(output_score_file, "output_score_file.pkl"), "wb") as f:
-			pickle.dump(
-				{
-					"scores": scores,
-					"label" : labels
-				},
-				f
-			)
+			pickle.dump(scores,f)
 		print("FINISH SAVING EMBEDDING SCORE!!")
 		# Coumpute EER and minDCF
 		EER = tuneThresholdfromScore(scores, labels, [1, 0.1])[1]
@@ -133,6 +187,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
