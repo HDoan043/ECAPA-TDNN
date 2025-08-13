@@ -52,7 +52,7 @@ if args.infer == True:
 	s = ECAPAModel(**vars(args))
 	print("Model %s loaded from previous state!"%args.initial_model)
 	s.load_parameters(args.initial_model)
-	s.inference(args.infer_list, args.infer_path)
+	s.inference(args.infer_list)
 	quit()
 ## Define the data loader
 trainloader = train_loader(**vars(args))
@@ -107,6 +107,7 @@ while(1):
 		quit()
 
 	epoch += 1
+
 
 
 
