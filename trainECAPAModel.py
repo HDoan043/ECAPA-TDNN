@@ -36,7 +36,7 @@ parser.add_argument('--n_class', type=int,   default=5994,   help='Number of spe
 
 ## Command
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Only do evaluation')
-parser.add_argument('--infer', 	dest='eval', action='store_true', help='Only do inference')
+parser.add_argument('--infer', 	dest='infer', action='store_true', help='Only do inference')
 
 ## Initialization
 warnings.simplefilter("ignore")
@@ -107,6 +107,7 @@ while(1):
 		quit()
 
 	epoch += 1
+
 
 
 
