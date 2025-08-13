@@ -100,8 +100,8 @@ class ECAPAModel(nn.Module):
 
 		### SAVE SCORE EMBEDDING
 		print("SAVING EMBEDDING SCORES ....")
-		os.makedirs(output_score_file, exist_ok = True)
-		with open(os.path.join(output_score_file, "output_score_file.pkl"), "wb") as f:
+		os.makedirs(output_score_dir, exist_ok = True)
+		with open(os.path.join(output_score_dir, "output_score_file.pkl"), "wb") as f:
 			pickle.dump(scores,f)
 		print("FINISH SAVING EMBEDDING SCORE!!")
 
@@ -190,6 +190,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
