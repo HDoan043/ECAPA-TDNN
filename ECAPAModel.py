@@ -46,7 +46,7 @@ class ECAPAModel(nn.Module):
 	'''
  	metadata for inference just contains <utt1_key> <utt2_key>, does not include the groundtruth labels.
  	'''
-	def inference(self, infer_list, infer_path, output_score_dir ="/kaggle/working/output/ECAPA-TDNN/"):
+	def inference(self, infer_list, output_score_dir ="/kaggle/working/output/ECAPA-TDNN/"):
 		self.eval()
 		files = []
 		embeddings = {}
@@ -61,7 +61,7 @@ class ECAPAModel(nn.Module):
 
 		for idx, file in tqdm.tqdm(enumerate(setfiles), total = len(setfiles)):
 			try:
-				audio, _  = soundfile.read(os.path.join(infer_path, file))
+				audio, _  = soundfile.read(file)
 				# Full utterance
 				data_1 = torch.FloatTensor(numpy.stack([audio],axis=0)).cuda()
 	
@@ -190,6 +190,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
