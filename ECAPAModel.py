@@ -61,7 +61,7 @@ class ECAPAModel(nn.Module):
 
 		for idx, file in tqdm.tqdm(enumerate(setfiles), total = len(setfiles)):
 			try:
-				audio, _  = soundfile.read(os.path.join(eval_path, file))
+				audio, _  = soundfile.read(os.path.join(infer_path, file))
 				# Full utterance
 				data_1 = torch.FloatTensor(numpy.stack([audio],axis=0)).cuda()
 	
@@ -190,6 +190,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
