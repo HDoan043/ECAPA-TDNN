@@ -21,7 +21,6 @@ parser.add_argument("--lr_decay",   type=float, default=0.97,    help='Learning 
 parser.add_argument('--train_list', type=str,   default="/kaggle/working/Speaker_Verification/train_list.txt",     		   help='The path of the training list, https://www.robots.ox.ac.uk/~vgg/data/voxceleb/meta/train_list.txt')
 parser.add_argument('--train_path', type=str,   default="/kaggle/input/vlsp2025-train/vlsp_train/home4/vuhl/VSASV-Dataset",        help='The path of the training data, eg:"/data08/VoxCeleb2/train/wav" in my case')
 parser.add_argument('--infer_list', type=str,	default="")
-parser.add_argument('--infer_path', type=str,	default="")
 parser.add_argument('--eval_list',  type=str,   default="/kaggle/working/Speaker_Verification/test_list.txt",              help='The path of the evaluation list, veri_test2.txt comes from https://www.robots.ox.ac.uk/~vgg/data/voxceleb/meta/veri_test2.txt')
 parser.add_argument('--eval_path',  type=str,   default="/kaggle/input/vlsp2025-public-test/public_test/home4/vuhl/VSASV-Dataset/vlsp2025",        help='The path of the evaluation data, eg:"/data08/VoxCeleb1/test/wav" in my case')
 parser.add_argument('--musan_path', type=str,   default="/kaggle/input/openslr17/musan",                    			   				   help='The path to the MUSAN set, eg:"/data08/Others/musan_split" in my case')
@@ -106,5 +105,6 @@ while(1):
 		quit()
 
 	epoch += 1
+
 
 
