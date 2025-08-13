@@ -95,7 +95,7 @@ class ECAPAModel(nn.Module):
 
 		print("FINISH SAVING EMBEDDING FILE IN {}".format(embedding_file))
 		
-		scores = {}
+		scores = []
 		for line in lines:	
 			embedding_11, embedding_12 = embeddings[line.split()[0]]
 			embedding_21, embedding_22 = embeddings[line.split()[1]]
@@ -104,12 +104,13 @@ class ECAPAModel(nn.Module):
 			score_2 = torch.mean(torch.matmul(embedding_12, embedding_22.T))
 			score = (score_1 + score_2) / 2
 			score = score.detach().cpu().numpy()
-			scores["{} {}".format(line.split()[0], line.split()[1])] = score
+			scores.append("{} {}".format(line.split()[1], score))
 
 		### SAVE SCORE EMBEDDING
 		print("SAVING EMBEDDING SCORES ....")
-		with open(os.path.join(output_score_dir, "output_score_file.pkl"), "wb") as f:
-			pickle.dump(scores, f)
+		with open(os.path.join(output_score_dir, "output_score_file.txt"), "w") as f:
+			for each in scores:
+				f.write(each+"\n")
 		print("FINISH SAVING EMBEDDING SCORE!!")
 
 
@@ -197,6 +198,7 @@ class ECAPAModel(nn.Module):
 				continue
 
 			self_state[name].copy_(param)
+
 
 
 
